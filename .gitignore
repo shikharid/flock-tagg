@@ -6,3 +6,6 @@
 
 # Media Files
 webapp/media/
+
+# Local Settings
+taggapp/local_settings.py
