@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from taggserver.models import FlockUser
+from taggserver import models
 
 
 class FlockUserAdmin(admin.ModelAdmin):
@@ -12,4 +12,8 @@ class FlockUserAdmin(admin.ModelAdmin):
                     'created_at',
                     'updated_at')
 
-admin.site.register(FlockUser, FlockUserAdmin)
+admin.site.register(models.FlockUser, FlockUserAdmin)
+admin.site.register(models.Tag, admin.ModelAdmin)
+admin.site.register(models.Content, admin.ModelAdmin)
+admin.site.register(models.File, admin.ModelAdmin)
+admin.site.register(models.Message, admin.ModelAdmin)
