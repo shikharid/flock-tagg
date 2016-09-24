@@ -24,6 +24,11 @@ class UserAPI(viewsets.ModelViewSet):
 
     @transaction.atomic()
     def create(self, request, *args, **kwargs):
+
+        if request.data.get('name') == 'app.uninstall':
+            tagg_models.FlockUser.objects.filter(user_id = request.data.get('userId')).delete()
+            return Response({}, status=status.HTTP_200_OK)
+
         try:
             print 'request: ', request.data
             user_data = {
@@ -38,7 +43,7 @@ class UserAPI(viewsets.ModelViewSet):
             # Create user_token tag to be used in filtering
 
             tag_serializer = tagg_serializers.TagSerializer(data={'tag_value': request.data.get('userId')})
-            tag_serializer.is_valid(raise_exception=True)   
+            tag_serializer.is_valid(raise_exception=True)
             self.perform_create(tag_serializer)
 
             headers = self.get_success_headers(serializer.data)
@@ -69,14 +74,14 @@ class ContentAPI(viewsets.ModelViewSet):
             file_obj = tagg_models.File.objects.get(id=attachment)
             for tag in tag_objs:
                 file_obj.tags.add(tag)
-            file_obj.tags.add(tagg_models.Tag.objects.get(tag_value=user.user_token))
+            file_obj.tags.add(tagg_models.Tag.objects.get(tag_value=user.user_id))
             file_obj.save()
 
         for tag in tag_objs:
             user.tags.add(tag)
             message.tags.add(tag)
 
-        message.tags.add(tagg_models.Tag.objects.get(tag_value=user.user_token))
+        message.tags.add(tagg_models.Tag.objects.get(tag_value=user.user_id))
         user.save()
         message.save()
 
@@ -88,7 +93,8 @@ class ContentAPI(viewsets.ModelViewSet):
         print 'User: ', user
         content_data = {
             'content_json': request.data.get('content_json'),
-            'user': user.id
+            'user': user.id,
+            'to': request.data.get('to')
         }
         serializer = self.get_serializer(data=content_data)
         serializer.is_valid(raise_exception=True)
@@ -103,8 +109,8 @@ class ContentAPI(viewsets.ModelViewSet):
 
         content = get_object_or_404(tagg_models.Content.objects.all(),
                                     id=self.kwargs.get(self.lookup_field))
-
-        if content.user.user_token != request.query_params.get('userId'):
+        print 'User_id: ', content.user.user_id
+        if content.user.user_id != request.query_params.get('userId'):
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = self.get_serializer(content)
@@ -179,6 +185,9 @@ class FileAPI(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except tagg_models.FlockUser.DoesNotExist:
             return Response({'error': 'Not found'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    def list(self, request, *args, **kwargs):
+        return Response({})
 
 
 class TagAPI(viewsets.ModelViewSet):
