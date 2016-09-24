@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.conf.urls import patterns, include, url
-
+from taggserver import urls
 admin.autodiscover()
 
 
@@ -10,4 +10,5 @@ urlpatterns = patterns(
     # Admin panel and documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'tagg/', include(urls)),
 )

@@ -142,7 +142,6 @@ MIDDLEWARE_CLASSES = (
     # Default Django middleware.
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -181,6 +180,7 @@ THIRD_PARTY_APPS = (
 
 LOCAL_APPS = (
     'libs',         # To make template tags work
+    'taggserver',
 )
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -263,9 +263,6 @@ from local_settings import *
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
 TEMPLATE_DEBUG = DEBUG
 
-# AUTH_USER_MODEL = 'authentication.User'
+AUTH_USER_MODEL = 'auth.User'
 
 COMPRESS_URL = STATIC_URL
-
-# Celery configuration
-BROKER_URL = 'amqp://guest:guest@localhost:5672//'
